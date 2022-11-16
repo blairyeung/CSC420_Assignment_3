@@ -44,6 +44,26 @@ def getGradient(image):
             gradient[i][j] = np.array([horizontal_slice[i][j], vertical_slice[i][j]])
     return gradient
 
+def group_by_box(directions, tau=144):
+    grouped = np.zeros(shape=(tau, tau, 6), dtype=int)
+    shape = directions.shape
+    dx = int(shape[0] / tau)
+    dy = int(shape[1] / tau)
+    print(dx, dy)
+    for i in range(tau):
+        for j in range(tau):
+            start_x = i * dx
+            end_x = start_x + dx
+            start_y = j * dy
+            end_y = start_y + dy
+            for k in range(6):
+                slice = directions[start_x:end_x]
+                block = slice.T[start_y:end_y]
+                grouped[i][j][k] = np.count_nonzero(block == (k+1))
+    return grouped
+
+
+
 
 if __name__ == '__main__':
     Image = cv2.imread('Image.jpg', cv2.IMREAD_GRAYSCALE)
@@ -55,11 +75,29 @@ if __name__ == '__main__':
     # gradient = gradient.transpose(1, 2, 0)
     directions = np.arctan(gradient) * 360 / math.pi
 
-    plt.imshow((directions))
-    plt.show()
+    directions = np.abs(directions)
 
-    print(np.max(directions))
-    print(np.min(directions))
+    """
+        Remember to do clipping! The clipped values should be labeled as -1 or 0, and not counted
+    """
+
+    directions = directions + 15 * np.ones(shape=directions.shape, dtype=int)
+
+    directions = (directions / 30 + np.ones(shape=directions.shape, dtype=int)).astype(int)
+
+    directions[directions > 6] = 1
+
+    grouped = group_by_box(directions)
+
+    print(directions)
+
+    # directions = group_by_box(directions)
+
+    # plt.imshow((directions))
+    # plt.show()
+
+    # print(np.max(directions))
+    # print(np.min(directions))
 
     pass
 
