@@ -44,7 +44,7 @@ def getGradient(image):
             gradient[i][j] = np.array([horizontal_slice[i][j], vertical_slice[i][j]])
     return gradient
 
-def group_by_box(directions, tau=144):
+def group_by_box(directions, tau=48):
     grouped = np.zeros(shape=(tau, tau, 6), dtype=int)
     shape = directions.shape
     dx = int(shape[0] / tau)
@@ -62,16 +62,52 @@ def group_by_box(directions, tau=144):
                 grouped[i][j][k] = np.count_nonzero(block == (k+1))
     return grouped
 
+def gradient_clipping(gradient, threshold):
+    for i in range(gradient.shape[0]):
+        for j in range(gradient.shape[1]):
+            magnitude = gradient[i][j][0] * gradient[i][j][0] + \
+            gradient[i][j][1] * gradient[i][j][1]
+            if gradient <= threshold:
+                gradient[i][j][0] = 0
+                gradient[i][j][1] = 0
 
+def graph_by_box(image, grouped, tau=48):
+    # grouped = np.zeros(shape=(tau, tau, 6), dtype=int)
+    shape = image.shape
+    dx = int(shape[0] / tau)
+    dy = int(shape[1] / tau)
+    fig, ax = plt.subplots()
+    fig.set_size_inches(10, 20, forward=True)
+    print(dx, dy)
+    ax.imshow(image)
+    for i in range(tau):
+        for j in range(tau):
+            x_pos = i * dx + int(dx/2)
+            y_pos = j * dy + int(dy/2)
+            for k in range(6):
+                val = grouped[i][j][k]
+                print(val)
+                x_direct = np.sin(k*30)
+                y_direct = np.cos(k*30)
+                ax.quiver(y_pos, x_pos, x_direct*val/10, y_direct*val/10, width=0.002)
+                print(i,j,k)
+    plt.show()
+    return None
 
 
 if __name__ == '__main__':
-    Image = cv2.imread('Image.jpg', cv2.IMREAD_GRAYSCALE)
-    shape = np.array(Image).shape
-    print(np.max(Image))
+    """
+        Appraoch 2
+    """
+    raw_image = cv2.imread('Image.jpg', cv2.IMREAD_GRAYSCALE)
+    shape = np.array(image).shape
+    print(np.max(image))
     sobelx = np.array(cv2.Sobel(Image, cv2.CV_64F, 1, 0, ksize=3))
     sobely = np.array(cv2.Sobel(Image, cv2.CV_64F, 0, 1, ksize=3))
     gradient = c = np.divide(sobelx, sobely, out=np.zeros_like(sobelx), where=sobely!=0)
+
+    threshlod = 0
+    gradient[gradient < threshlod] = 360
     # gradient = gradient.transpose(1, 2, 0)
     directions = np.arctan(gradient) * 360 / math.pi
 
@@ -88,6 +124,8 @@ if __name__ == '__main__':
     directions[directions > 6] = 1
 
     grouped = group_by_box(directions)
+
+    graph_by_box(Image, grouped)
 
     print(directions)
 
