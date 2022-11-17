@@ -7,8 +7,8 @@ import matplotlib.image as mpimg
 
 
 size = 1000
-sigma = 25
-sqsize = 50
+sigma = 34
+sqsize = 100
 start_coord = (int(size/2 - sqsize / 2), int(size/2 - sqsize/2))
 end_coord = (int(size/2 + sqsize / 2), int(size/2 + sqsize/2))
 
@@ -34,6 +34,7 @@ mid = int(size/2)
 print(sigma)
 # print(np.max(array), np.min(array))
 plt.plot(list(range(size)), array[mid])
+plt.title("Center-slice of the image with sigma " + str(sigma)+ ' and size ' + str(sqsize))
 plt.show()
 """
 
