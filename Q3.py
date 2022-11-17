@@ -100,10 +100,10 @@ if __name__ == '__main__':
         Appraoch 2
     """
     raw_image = cv2.imread('Image.jpg', cv2.IMREAD_GRAYSCALE)
-    shape = np.array(image).shape
-    print(np.max(image))
-    sobelx = np.array(cv2.Sobel(Image, cv2.CV_64F, 1, 0, ksize=3))
-    sobely = np.array(cv2.Sobel(Image, cv2.CV_64F, 0, 1, ksize=3))
+    shape = np.array(raw_image).shape
+    print(np.max(raw_image))
+    sobelx = np.array(cv2.Sobel(raw_image, cv2.CV_64F, 1, 0, ksize=3))
+    sobely = np.array(cv2.Sobel(raw_image, cv2.CV_64F, 0, 1, ksize=3))
     gradient = c = np.divide(sobelx, sobely, out=np.zeros_like(sobelx), where=sobely!=0)
 
     threshlod = 0
@@ -125,7 +125,7 @@ if __name__ == '__main__':
 
     grouped = group_by_box(directions)
 
-    graph_by_box(Image, grouped)
+    graph_by_box(raw_image, grouped)
 
     print(directions)
 
