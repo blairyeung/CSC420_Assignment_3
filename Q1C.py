@@ -7,7 +7,7 @@ import matplotlib.image as mpimg
 
 
 size = 1000
-sigma = 34
+sigma = 1
 sqsize = 100
 start_coord = (int(size/2 - sqsize / 2), int(size/2 - sqsize/2))
 end_coord = (int(size/2 + sqsize / 2), int(size/2 + sqsize/2))
